@@ -1,0 +1,25 @@
+name: Build Violation Reader
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: windows-2022
+
+    steps:
+      - name: Download source
+        uses: actions/checkout@v4
+
+      - name: Setup MSBuild
+        uses: microsoft/setup-msbuild@v2
+
+      - name: Compile
+        run: |
+          msbuild Violations\Violations.vcxproj /m /p:Configuration=Release /p:Platform=x64 /p:PlatformToolset=v143
+
+      - name: Upload EXE
+        uses: actions/upload-artifact@v4
+        with:
+          name: Violation-Reader
+          path: Violations/x64/Release/Violations.exe
