@@ -6,8 +6,8 @@
 #define __PAIR64__(high, low) (((uint64_t)high << 32) | (uint32_t)low)
 
 uintptr_t DecryptState(uintptr_t encryptedState) {
-	DWORD low = (DWORD)encryptedState - Read<DWORD>(encryptedState);
-	DWORD high = (DWORD)encryptedState - Read<DWORD>(encryptedState + 0x4);
+	DWORD low = Read<DWORD>(encryptedState) - (DWORD)encryptedState;
+	DWORD high = Read<DWORD>(encryptedState + 0x4) - (DWORD)encryptedState;
 	return __PAIR64__(high, low);
 }
 
@@ -39,9 +39,7 @@ int main() {
 		uint32_t violations = 0;
 		for (int i = 0; i < 4; i++) {
 			uint8_t value = Read<uint8_t>(encodedTable + i);
-			value ^= Read<uint8_t>(xorTable + i);
-			value = ~value;
-			value = __ROL1__(value, 1);
+			value = __ROL1__(value, 4);
 
 			violations |= (uint32_t)value << (i * 8);
 		}
